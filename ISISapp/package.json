@@ -1,0 +1,29 @@
+{
+    "name": "HQUproject",
+    "version": "1.0.0",
+    "description": "HQU CAPSTONE PROJECT FOR Yuxuan",
+    "main": "server.js",
+    "scripts": {
+        "start": "nodemon app.js -e js,ejs,css"
+    },
+    "author": "Yuxuan Zhu",
+    "license": "ISC",
+    "dependencies": {
+        "adm-zip": "^0.4.14",
+        "bluebird": "^3.5.5",
+        "canvas": "^2.6.1",
+        "canvas-nest.js": "^2.0.4",
+        "chalk": "^3.0.0",
+        "cookie-parser": "^1.4.4",
+        "ejs": "^2.6.1",
+        "express": "^4.17.1",
+        "express-fileupload": "^1.1.4",
+        "fs": "0.0.1-security",
+        "fs-extra": "^8.1.0",
+        "mongoose": "^5.9.4",
+        "svg2img": "^0.6.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.2"
+    }
+}

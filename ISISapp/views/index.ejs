@@ -1,0 +1,120 @@
+<html>
+
+<head>
+    <title>Home Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" href="images/usgsLogo.png" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="js/index.js"></script>
+
+</head>
+
+<body>
+    <div id="loading" class="float-right lead loading">
+        <img src="../images/loading.gif" height="100%" weight="auto" />
+        <br>
+        <h3 style="text-align: left; margin-right: 1rem;">Loading</h3>
+    </div>
+
+    <!-- <div class="text-center" style="border: 0px solid black; padding:20%; padding-top: 0; padding-bottom: 0;">
+        <h1 class="display-4" style="border: 0px solid blue;">基于Docker封装的全平台行星图像及元数据撰写工具</h1>
+    </div> -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">华侨大学-朱宇轩</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item" style="padding: 0;">
+                        <a class="nav-link js-scroll-trigger"
+                            onclick="alert(' 1. 选择你想要使用的cub文件 \n 2. 以像素为单位输入所需的图像输出尺寸(宽&times高),只输入宽度或者高度其中一个的话另一个系统会为你自动计算(不填写的话将使用默认值)\n 3. 选择一个想要使用的tpl文件(或追不上传以使用服务器预设的tpl文件-可以满足绝大部分需求) \n 4. 点击上传按钮进行下一步操作')">寻求帮助</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="text-white" style="background: #233c52;">
+        <div class="container text-center">
+            <h1>基于Docker封装的全平台行星图像及元数据撰写工具</h1>
+            <p class="lead">您可以上传一个cub文件(必须)和一个tpl文件(可选)</p>
+        </div>
+    </header>
+    <br />
+    <!-- <div class="title text-center" style="width: auto; background: #eeeee2;">
+        <p class="lead" style="margin-left: auto; margin-right: auto; font-size: 2rem; color: black;">
+            您可以上传一个cub文件(必须)和一个tpl文件(可选)
+        </p>
+        <a class="btn btn-primary btn-lg" style="border: 2px solid black; color: white;" role="button"
+            onclick="alert(' 1. 选择你想要使用的cub文件 \n 2. 以像素为单位输入所需的图像输出尺寸(宽&times高),只输入宽度或者高度其中一个的话另一个系统会为你自动计算(不填写的话将使用默认值)\n 3. 选择一个想要使用的tpl文件(或追不上传以使用服务器预设的tpl文件-可以满足绝大部分需求) \n 4. 点击上传按钮进行下一步操作')">寻求帮助</a>
+    </div> -->
+    <br />
+    <div class="container float-center" style="margin: 0; margin-left:auto; margin-right: auto;">
+        <form name="uploadForm" class="text-center" action="/captionWriter" method="POST" enctype="multipart/form-data">
+            <div class="btn btn-dark btn-lg form-group"
+                style="color:black; width:25rem;display:inline-block; background:#e7c49214; border: 2px solid black;">
+                <label for="cubUpload" style="font-size: x-large;">请选择一个ISIS Cube文件</label>
+                <input name="uploadFile" id="cubUpload" style="padding-bottom:1rem;" type="file"
+                    class="form-control-file" />
+
+                <div class="form-group float-center"
+                    style="padding-left: 7rem; padding-right:0;padding-top: -1rem; width: 17rem;color: black;">
+                    <input class="form-control form-control-sm text-center" type="text" id="widthInput"
+                        name="desiredWidth" placeholder="输出宽度 (Px)" />
+                    <input class="form-control form-control-sm text-center" type="text" id="heightInput"
+                        name="desiredHeight" placeholder="输出高度 (Px)" />
+                </div>
+            </div>
+
+            <hr class="style5">
+            <div class="btn btn-dark btn-lg form-group"
+                style="color: black; background: #e7c49214; border: 2px solid black;">
+                <label for="tplUpload" style="font-size: larger;">请选择一个Template文件</label>
+                <input name="templateFile" id="tplUpload" type="file" class="form-control-file" />
+            </div>
+            <br />
+            <input type="button" class="btn button btn-lg" name="SubmitCube" value="上传"
+                style="width: 10rem; border: 1px solid black;" onclick="loaderActivate()" />
+        </form>
+    </div>
+
+    <div id="pageVariable">
+        <p id="alertCode" style="margin-bottom: 0rem"><%= alertCode %></p>
+    </div>
+    <!-- 更改：去掉所有alert代码 -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/100/three.min.js"></script>
+    <script src="https://www.vantajs.com/dist/vanta.birds.min.js"></script>
+    <!-- B. Instilize vanta js by #id selector -->
+    <script>
+        VANTA.BIRDS({
+            el: "body",
+            mouseControls: true,
+            touchControls: true,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            backgroundColor: 0xc0c3c7,
+            color1: 0xd12828,
+            birdSize: 0.90,
+            speedLimit: 6.00,
+            separation: 39.00,
+            alignment: 51.00,
+            cohesion: 35.00,
+            backgroundAlpha: 0.67
+        })
+    </script>
+</body>
+
+
+</html>

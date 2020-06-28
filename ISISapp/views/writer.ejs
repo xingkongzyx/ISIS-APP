@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Caption Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="js/writer.js"></script>
+</head>
+
+<body>
+
+    <div id="loading" class="float-md-right text-center lead loading">
+        <img src="../images/loading.gif" class='float-center;' height="100%" weight="auto" />
+        <br>
+        <h3 style="text-align: center; margin-left: 1rem;">加载中</h3>
+    </div>
+
+    <div class="container" style="height: 11rem; width: 75%; padding: 0; border-top: 1px; border-left: 1px; 
+        border-right:1px; border-bottom: 2px; border: solid black; margin-bottom: 1rem; background: rgba(243, 214, 176, 0.15);">
+        <div class="jumbotron text-center" style="height: 68%; padding: 2rem; border: 1px solid black; padding-top: 1rem; 
+            padding-bottom:0;background-color: #e7c4920f;">
+            <h1 class="display-5" style="margin: 0;float: center;">上传成功</h1>
+            <p class="lead" style="margin-bottom:2rem; color: black;">使用中间数据区域的标签在底部进行编辑</p>
+            <a class="btn btn-primary btn-lg float-left" href="/" role="button"
+                style="width: auto; height: 2.5rem; padding:5;border: 1.5px solid black;">上传新的文件</a>
+
+            <a class="btn btn-primary btn-lg" style="width: auto; height: 2.5rem; padding:5;border: 1.5px solid black;"
+                role="button"
+                onclick="alert(' 1. 在底部的方框中输入标题 \n 2. 将标签从中间方框中复制并粘贴到可编辑区域中。\n 3. 使用标签搜索栏从当前标签集中查找带有关键字的标签 \n 4. 以txt格式导出创建的文本或以csv格式将数据导出 \n 5. 借助部署的数据库功能打包下载本次所有数据以及上次使用的所有数据(png图片,重要数据,全部数据)')">寻求帮助</a>
+
+            <form method="POST" action="/imageEditor" class="lg-form text-center float-right" style="margin: 0;">
+                <div class="form-group">
+                    <input type="hidden" value='<%= dictionaryString  %>' name="image_string">
+                    <input type="submit" value="图片编辑" class="btn btn-primary btn-lg"
+                        style="width: auto; height: 2.5rem; padding:5;border: 1.5px solid black;"
+                        onclick="loaderActivate()" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container" style="height: 3rem;">
+        <form action="/downloadCurrent" method="post" class="float-left"
+        style="margin-left: 20%; border: 1.5px solid black; ">
+        <button class="btn btn-info">下载本次文件</button>
+    </form>
+    <form action="/downloadPrevious" method="post" class="float-right"
+        style="margin-right: 20%; border: 1.5px solid black; ">
+        <button class="btn btn-info">下载上一次文件</button>
+    </form>
+    </div>
+
+
+    <div id="pageVariables" style="display: none;">
+        <p id="outputName"><%=outputName%></p>
+    </div>
+
+    <div class="container float-center"
+        style="width: 75%; border: 0 solid blue; margin:0; margin-left: auto; margin-right:auto;">
+
+        <div id="template-output" class="text-center form-group metadata" style="margin: 0;">
+            <label for="template-text-output">
+                <h3 class="display-5 alert alert-secondary"
+                    style="border: 2px solid black; background: #63585e; color: white;">数据输出区域</h2>
+            </label>
+            <textarea readonly id="template-text-output" class="form-control bg-white text-dark metadata"
+                style="resize: vertical; font-size: 22px; border: 2px solid black;" rows="7"></textarea>
+            <br />
+
+            <form class="lg-form text-center float-right" style="margin: 0;">
+                <div class="form-group">
+                    <a class="btn button text-white btn-lg" style="width: 12rem; padding: 7px; border: 2px solid black;"
+                        role="button" id="link" download="<%=outputName%>">
+                        下载文本
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <br />
+        <br />
+        <!-- 不可见区域 -->
+        <div id="metadata" style="display: none;" class="text-center green-border-focus">
+            <label for="metadata-text">
+                <h2>Metadata Output DICTSTRING </h2>
+            </label>
+            <textarea readonly id="metadata-text" class="form-control bg-white text-dark"
+                style="resize: vertical; font-size: 22px;"><%= dictionaryString %>
+                </textarea>
+        </div>
+
+        <div id="tags" style="display: none;" class="text-center green-border-focus">
+            <label for="all-tag-text">
+                <h2>All Tag Info CSVSTRING</h2>
+            </label>
+            <textarea readonly id="all-tag-text" class="form-control bg-white text-dark"
+                style="resize: vertical; font-size: 22px;"><%= wholeData %></textarea>
+        </div>
+
+        <div id="metadata-tags" style="display: none;" class="text-center green-border-focus">
+            <label for="metadataTagArea">
+                <h2>Metadata Tags</h2>
+            </label>
+            <textarea readonly id="metadataTagArea" class="form-control bg-white text-dark"
+                style="resize: vertical; font-size: 22px;"></textarea>
+        </div>
+
+        <div id="important-tags" style="display: none;" class="text-center green-border-focus">
+            <label for="allTagArea">
+                <h2>allTagArea</h2>
+            </label>
+            <textarea readonly id="allTagArea" class="form-control bg-white text-dark"
+                style="resize: vertical; font-size: 22px;"></textarea>
+        </div>
+
+        <br />
+        <div id="test-metadata" class="text-center float-center form-group" style="margin-top: 0;">
+            <label for="test" class="float-center" style="margin: 0;">
+                <h3 class="display-5 alert alert-secondary"
+                    style="border: 2px solid black; margin: inherit; background: #63585e; color: white;">
+                    可使用的标签
+                </h3>
+            </label>
+            <br />
+            <div class="float-left" style="text-align:center; margin: 0; margin-bottom: 1rem;">
+                <label for="filterInput" class="alert alert-light"
+                    style="color:black; width: auto; height:40px; padding:3px;">
+                    <h4>关键字查询</h4>
+                </label>
+                <br />
+                <input id="filterInput" class="form-control-md" type="text" placeholder="Search" style="background-color: rgba(255,255,255); text-align: inherit; margin:inherit; color:black;
+                        border: 1.5px solid black;">
+            </div>
+            <br />
+            <textarea readonly id="test" class="form-control bg-white text-dark metadata"
+                style="resize: vertical; font-size: 22px; border: 2px solid black;" rows="7"></textarea>
+            <button id="button-more-tags" class="btn btn-md button float-left"
+                style=" border: 2px solid black; margin: 0; margin-top:1rem; width: auto;"
+                onclick="showMoreTags()">显示重要标签</button>
+
+            <form action="/csv" method='POST' class="lg-form text-center float-right"
+                style="margin: 0;  margin-top:1rem;">
+                <div class="lg-form text-center" style="margin: 0;">
+                    <input type="hidden" value="<%= wholeData %>" id="passedTXT">
+                    <input type="hidden" value="<%= csvString %>" id="csvStringPassed">
+                    <input type="submit" value="保存元数据(csv格式)" class="btn button btn-lg"
+                        style="width: 13rem; border: 2px solid black; padding: 7px;" />
+                </div>
+            </form>
+        </div>
+        <br />
+        <br />
+        <div id="template" class="float-center text-center form-group" style="margin-top: 1;">
+            <label for="template-text">
+                <h3 class="display-5 alert alert-secondary"
+                    style="border: 2px solid black; background: #63585e; color: white;">编辑区域</h2>
+            </label>
+            <textarea id="template-text" class="form-control bg-white text-dark" rows="7"
+                style="resize: vertical; font-size: 22px; border: 2px solid black;"><%= templateText %>
+                </textarea>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/100/three.min.js"></script>
+    <script src="https://www.vantajs.com/dist/vanta.globe.min.js"></script>
+    <!-- B. Instilize vanta js by #id selector -->
+    <script>
+        VANTA.GLOBE({
+          el: "html",
+          mouseControls: false,
+          touchControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          scale: 1.00,
+          scaleMobile: 1.00,
+          color: 0x727f8b,
+          color2: 0x312525,
+          size: 1.70,
+          backgroundColor: 0xcac9cc
+        })
+    </script>
+</body>
+
+</html>

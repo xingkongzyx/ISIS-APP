@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    image: continuumio/miniconda3:latest
+    container_name: server
+    hostname: server
+    restart: always
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+    depends_on:
+      - mongo
+  mongo:
+    container_name: db
+    image: mongo
+    ports:
+      - '27017:27017'
